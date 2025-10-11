@@ -3,55 +3,132 @@
 #include <memory>
 #include <string>
 #include "Car.h"
-#include "Configuration.h"
 
-using namespace std;
-
+/**
+ * @class CarManager
+ * @brief Менеджер-клас для керування колекцією автомобілів.
+ * @details Реалізує всю бізнес-логіку програми: CRUD-операції,
+ * завантаження/збереження, пошук, сортування, фільтрацію та аналітику.
+ * Є центральним компонентом, що взаємодіє з користувачем.
+ */
 class CarManager {
 public:
-    
-	CarManager();
+    CarManager();
     CarManager(const CarManager& other);
-	CarManager(CarManager&& other) noexcept;
-	~CarManager();
+    CarManager(CarManager&& other) noexcept;
+    ~CarManager();
 
-    // --- CRUD ---
-    void loadFromFile(const string& filename);
-    void saveToFile(const string& filename);
+    /**
+     * @brief Завантажує дані про автомобілі з файлу.
+     * @param filename Ім'я файлу для завантаження (напр., "cars.csv").
+     */
+    void loadFromFile(const std::string& filename);
+
+    /**
+     * @brief Зберігає поточну колекцію автомобілів у файл.
+     * @param filename Ім'я файлу для збереження.
+     */
+    void saveToFile(const std::string& filename);
+
+    /**
+     * @brief Ініціює процес додавання нового автомобіля через діалог з користувачем.
+     */
     void addCar();
+
+    /**
+     * @brief Виводить повний список автомобілів з їх характеристиками в консоль.
+     */
     void showAllCars() const;
+
+    /**
+     * @brief Дозволяє користувачеві редагувати дані існуючого автомобіля за індексом.
+     */
     void editCar();
+
+    /**
+     * @brief Видаляє автомобіль з колекції за вказаним індексом.
+     */
     void removeCar();
 
-    // --- Аналітика ---
+    // --- Аналітика та розрахунки ---
     void findMostEconomicalCar() const;
     void averagePriceInPeriod() const;
+	// --- Методи для додаткової інформації по окремих авто ---
+    void calcTripCost() const;
+    void showCarAge() const;
+    void applyDiscountToCar();
 
     // --- Сортування ---
+
+    /**
+     * @brief Сортує список автомобілів за ціною.
+     * @param ascending true для сортування за зростанням, false - за спаданням.
+     */
     void sortByPrice(bool ascending = true);
+
+    /**
+     * @brief Сортує список автомобілів за роком випуску.
+     * @param ascending true для сортування за зростанням, false - за спаданням.
+     */
     void sortByYear(bool ascending = true);
+
+    /**
+     * @brief Сортує список автомобілів за витратами пального.
+     * @param ascending true для сортування за зростанням, false - за спаданням.
+     */
     void sortByFuelConsumption(bool ascending = true);
 
-    // --- Фільтрація ---
-    void filterByBrand(const string& b) const;
-    void filterByColor(const string& c) const;
-    void filterByYear(int y) const;
-	void filterByModel(const string& m) const;
+    // --- Пошук та фільтрація ---
 
-    // --- Нові методи (з предметної області) ---
+    /**
+     * @brief Фільтрує та виводить автомобілі за вказаною маркою.
+     * @param b Марка для фільтрації.
+     */
+    void filterByBrand(const std::string& b) const;
+
+    /**
+     * @brief Фільтрує та виводить автомобілі за вказаним кольором.
+     * @param c Колір для фільтрації.
+     */
+    void filterByColor(const std::string& c) const;
+
+    /**
+     * @brief Фільтрує та виводить автомобілі за вказаним роком.
+     * @param y Рік для фільтрації.
+     */
+    void filterByYear(int y) const;
+
+    /**
+     * @brief Фільтрує та виводить автомобілі за вказаною моделлю.
+     * @param m Модель для фільтрації.
+     */
+    void filterByModel(const std::string& m) const;
+
+    /**
+     * @brief Запускає діалог пошуку авто за маркою.
+     */
     void findByBrand() const;
-    void findEconomicalCars() const;
-    void findFamilyCars() const;
-    void applyDiscountToCar();
-    void showCarAge() const;
-    void calcTripCost() const;
+
+    /**
+     * @brief Запускає розширений пошук за декількома критеріями.
+     */
     void searchCars() const;
-    // --- Сервісний метод ---
+
+    /**
+     * @brief Знаходить та виводить економічні авто (витрати пального нижче ліміту).
+     */
+    void findEconomicalCars() const;
+
+    /**
+     * @brief Знаходить та виводить "сімейні" авто (4+ дверей).
+     */
+    void findFamilyCars() const;
+
+    // --- Сервісні методи ---
     void showHelp() const;
     void showHelpnotadm() const;
 
 private:
-    vector<shared_ptr<Car>> cars;
-
+    std::vector<std::shared_ptr<Car>> cars;
     void printCarIndexList() const;
 };
