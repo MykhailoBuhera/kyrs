@@ -123,7 +123,7 @@ void CarManager::editCar() {
 
         cout << "--- Редагування авто ---\n";
         cout << "Нова марка: "; cin >> brand;
-        cout << "Нова модель: "; cin >> model;      // <-- нове
+        cout << "Нова модель: "; cin >> model; 
         cout << "Новий колір: "; cin >> color;
         cout << "Нові витрати бензину: "; cin >> fuel;
         cout << "Нова кількість дверей: ";
