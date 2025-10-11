@@ -9,6 +9,7 @@ using namespace std;
 
 class CarManager {
 public:
+    
 	CarManager();
     CarManager(const CarManager& other);
 	CarManager(CarManager&& other) noexcept;
@@ -54,4 +55,3 @@ private:
 
     void printCarIndexList() const;
 };
- //get set methods add
