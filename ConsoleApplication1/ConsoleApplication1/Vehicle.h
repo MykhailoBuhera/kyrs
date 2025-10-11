@@ -28,11 +28,11 @@ public:
     void setPrice(double p);
 
     // Методи предметної області
-    bool isOlderThan(int y) const;          // Чи старший за рік
-    bool isCheaperThan(double p) const;     // Чи дешевший за ціну
-    int age(int currentYear) const;         // Вік авто
-    void applyDiscount(double percent);     // Знижка
-    bool isBrand(const string& b) const;    // Чи відповідає марці
+    bool isOlderThan(int y) const;          
+    bool isCheaperThan(double p) const;     
+    int age(int currentYear) const;         
+    void applyDiscount(double percent);     
+    bool isBrand(const string& b) const;    
 
     // Віртуальні методи для реалізації у нащадках
 

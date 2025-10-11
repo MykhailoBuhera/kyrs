@@ -27,13 +27,14 @@ public:
     void toggleAirConditioner();
     void toggleMultimedia();
     void toggleSafety();
+    
 
-    // Перевизначення
     void print() const override;
     std::string toCSV() const override;
     static Configuration fromCSV(const std::string& line);
+
 private:
-    std::string packageName;   // Назва комплектації (Basic, Comfort, Premium)
+    std::string packageName;  
     bool hasAirConditioner;
     bool hasMultimedia;
     bool hasSafetySystem;
