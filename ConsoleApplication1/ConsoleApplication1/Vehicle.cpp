@@ -1,4 +1,5 @@
 #include "Vehicle.h"
+using namespace std;
 
 // Конструктори
 Vehicle::Vehicle() : brand(""), color(""), year(0), price(0.0) {}
