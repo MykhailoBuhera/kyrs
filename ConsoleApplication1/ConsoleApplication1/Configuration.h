@@ -26,7 +26,6 @@ public:
     double getPrice() const;
     void setPrice(double p);
 
-    // --- 4 методи предметної області ---
 
     /**
      * @brief Перевіряє, чи є комплектація люксовою.
@@ -34,8 +33,25 @@ public:
      */
     bool isLuxury() const;
 
+    /**
+     * @brief Змінює стан кондиціонера (включає/виключає).
+     * @details Якщо поле `hasAirConditioner` було встановлене в `true`, метод
+     * переключить його в `false`. Якщо було `false` — переключить в `true`.
+     */
     void toggleAirConditioner();
+
+    /**
+     * @brief Змінює стан мультимедійної системи (включає/виключає).
+     * @details Якщо поле `hasMultimedia` було встановлене в `true`, метод
+     * переключить його в `false`. Якщо було `false` — переключить в `true`.
+     */
     void toggleMultimedia();
+
+    /**
+     * @brief Змінює стан системи безпеки (включає/виключає).
+     * @details Якщо поле `hasSafetySystem` було встановлене в `true`, метод
+     * переключить його в `false`. Якщо було `false` — переключить в `true`.
+     */
     void toggleSafety();
 
     // --- Реалізація інтерфейсу ---
