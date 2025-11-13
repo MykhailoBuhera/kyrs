@@ -117,18 +117,23 @@ string AuthManager::getCurrentUser() const {
 }
 
 void AuthManager::addUser() {
-    string username, password;
-    cout << "Новий логін: ";
-    cin >> username;
-    if (users.count(username)) {
-        cout << "Такий користувач вже існує.\n";
-        return;
+    try {
+        string username, password;
+        cout << "Новий логін: ";
+        cin >> username;
+        if (users.count(username)) {
+            cout << "Такий користувач вже існує.\n";
+            return;
+        }
+        cout << "Пароль: ";
+        cin >> password;
+        users[username] = password;
+        saveUsers();
+        cout << "Користувача додано.\n";
     }
-    cout << "Пароль: ";
-    cin >> password;
-    users[username] = password;
-    saveUsers();
-    cout << "Користувача додано.\n";
+    catch (const exception& ex) {
+        cerr << "Помилка додавання користувача " << ex.what() << endl;
+	}
 }
 
 void AuthManager::deleteUser() {

@@ -46,38 +46,46 @@ void Car::print() const {
 }
 
 Car Car::fromCSV(const string& line) {
-    istringstream iss(line);
-    string brand, color, model;
-    double fuelConsumption, price;
-    int doorCount, year;
+    try {
+        istringstream iss(line);
+        string brand, color, model;
+        double fuelConsumption, price;
+        int doorCount, year;
 
-    getline(iss, brand, ',');
-    getline(iss, color, ',');
-    getline(iss, model, ',');
-    iss >> fuelConsumption; iss.ignore();
-    iss >> doorCount; iss.ignore();
-    iss >> year; iss.ignore();
-    iss >> price;
+        getline(iss, brand, ',');
+        getline(iss, color, ',');
+        getline(iss, model, ',');
+        iss >> fuelConsumption; iss.ignore();
+        iss >> doorCount; iss.ignore();
+        iss >> year; iss.ignore();
+        iss >> price;
 
-    if (iss.peek() == ',') iss.get(); // пропускаємо кому
-    string configData;
-    getline(iss, configData);
+        if (iss.peek() == ',') iss.get(); // пропускаємо кому
+        string configData;
+        getline(iss, configData);
 
-    Configuration cfg;
-    if (!configData.empty()) {
-        cfg = Configuration::fromCSV(configData);
+        Configuration cfg;
+        if (!configData.empty()) {
+            cfg = Configuration::fromCSV(configData);
+        }
+
+        return Car(brand, color, model, fuelConsumption, doorCount, year, price, cfg);
+
     }
-
-    return Car(brand, color, model, fuelConsumption, doorCount, year, price, cfg);
+    catch (const exception& e) {
+        cerr << "Помилка при розборі CSV рядка: " << e.what() << endl;
+        return Car();
+	}
 }
 
 string Car::toCSV() const {
-    ostringstream oss;
-    oss << getBrand() << "," << getColor() << "," << model << ","
-        << fuelConsumption << "," << doorCount << ","
-        << getYear() << "," << getPrice() << ","
-        << config.toCSV();
-    return oss.str();
+        ostringstream oss;
+        oss << getBrand() << "," << getColor() << "," << model << ","
+            << fuelConsumption << "," << doorCount << ","
+            << getYear() << "," << getPrice() << ","
+            << config.toCSV();
+        return oss.str();
+   
 }
 
 // Getters

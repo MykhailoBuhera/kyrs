@@ -4,10 +4,10 @@
 #include <algorithm>
 #include <sstream>
 #include <limits>
+#include <stdexcept>
 
 using namespace std;
 
-//конструктор за замовчуванням
 CarManager::CarManager() {}
 CarManager::CarManager(const CarManager& other) : cars(other.cars) {}
 CarManager::CarManager(CarManager&& other) noexcept : cars(move(other.cars)) {}
@@ -32,25 +32,50 @@ void CarManager::printCarIndexList() const {
 
 void CarManager::loadFromFile(const string& filename) {
     ifstream file(filename);
+    if (!file.is_open()) {
+        throw runtime_error(string("[loadFromFile] Failed to open file: ") + filename);
+    }
+
     string line;
+    size_t lineNo = 0;
     while (getline(file, line)) {
+        ++lineNo;
         if (!line.empty()) {
-            cars.push_back(make_shared<Car>(Car::fromCSV(line)));
+            try {
+                cars.push_back(make_shared<Car>(Car::fromCSV(line)));
+            }
+            catch (const std::exception& ex) {
+                cerr << "[loadFromFile] Error parsing line " << lineNo << ": " << ex.what() << '\n';
+            }
+            catch (...) {
+                cerr << "[loadFromFile] Unknown error parsing line " << lineNo << '\n';
+            }
         }
+    }
+
+    if (file.bad()) {
+        throw runtime_error(string("[loadFromFile] I/O error while reading file: ") + filename);
     }
 }
 
 void CarManager::saveToFile(const string& filename) {
     ofstream file(filename);
+    if (!file.is_open()) {
+        throw runtime_error(string("[saveToFile] Failed to open file for writing: ") + filename);
+    }
+
     for (const auto& car : cars) {
         file << car->toCSV() << '\n';
+        if (!file) {
+            throw runtime_error(string("[saveToFile] Failed while writing to file: ") + filename);
+        }
     }
 }
 
 void CarManager::addCar() {
     string brand, color, model;   
     double fuel, price;
-    int doors, year;
+    int doors, year;    
 
     cout << "\n--- Додавання нового авто ---\n";
     cout << "Марка: "; cin >> brand;
@@ -94,11 +119,33 @@ void CarManager::addCar() {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
-    Configuration config(brand, model, packageName, hasAC, hasMultimedia, hasSafety, configPrice);
+    try {
+        Configuration config(brand, model, packageName, hasAC, hasMultimedia, hasSafety, configPrice);
+        cars.push_back(make_shared<Car>(brand, color, model, fuel, doors, year, price, config));
+        cout << "? Авто додано!\n";
+    }
+    catch (const std::exception& ex) {
+        cerr << "[addCar] Error creating car/configuration: " << ex.what() << '\n';
+        cout << "? Помилка при створенні авто.\n";
+        return;
+    }
+    catch (...) {
+        cerr << "[addCar] Unknown error creating car/configuration\n";
+        cout << "? Невідома помилка при створенні авто.\n";
+        return;
+    }
 
-    cars.push_back(make_shared<Car>(brand, color, model, fuel, doors, year, price, config));
-    cout << "? Авто додано!\n";
-	saveToFile("cars.csv");
+    try {
+        saveToFile("cars.csv");
+    }
+    catch (const std::exception& ex) {
+        cerr << "[addCar] Failed to save to file: " << ex.what() << '\n';
+        cout << "? Помилка збереження у файл.\n";
+    }
+    catch (...) {
+        cerr << "[addCar] Unknown error while saving to file\n";
+        cout << "? Невідома помилка збереження у файл.\n";
+    }
 }
 
 void CarManager::showAllCars() const {
@@ -147,7 +194,7 @@ void CarManager::editCar() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         
-		double configPrice;
+        double configPrice;
         string packageName;
         bool hasAC, hasMultimedia, hasSafety;
         cin.ignore();
@@ -162,14 +209,33 @@ void CarManager::editCar() {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
 
+        try {
+            Configuration config(brand, model, packageName, hasAC, hasMultimedia, hasSafety, configPrice);
+            cars[index] = make_shared<Car>(brand, color, model, fuel, doors, year, price, config);
+            cout << "? Авто оновлено!\n";
+        }
+        catch (const std::exception& ex) {
+            cerr << "[editCar] Error creating car/configuration: " << ex.what() << '\n';
+            cout << "? Помилка при оновленні авто.\n";
+            return;
+        }
+        catch (...) {
+            cerr << "[editCar] Unknown error creating car/configuration\n";
+            cout << "? Невідома помилка при оновленні авто.\n";
+            return;
+        }
 
-        Configuration config(brand, model, packageName, hasAC, hasMultimedia, hasSafety, configPrice);
-        Car car(brand, color, model, fuel, doors, year, price, config);
-
-
-        cars[index] = make_shared<Car>(brand, color, model, fuel, doors, year, price, config);
-        cout << "? Авто оновлено!\n";
-        saveToFile("cars.csv");
+        try {
+            saveToFile("cars.csv");
+        }
+        catch (const std::exception& ex) {
+            cerr << "[editCar] Failed to save to file: " << ex.what() << '\n';
+            cout << "? Помилка збереження у файл.\n";
+        }
+        catch (...) {
+            cerr << "[editCar] Unknown error while saving to file\n";
+            cout << "? Невідома помилка збереження у файл.\n";
+        }
     }
     else {
         cout << "? Невірний індекс!\n";
@@ -204,7 +270,7 @@ void CarManager::findMostEconomicalCar() const {
 
 void CarManager::averagePriceInPeriod() const {
     int start, end;
-	cout << "\nВведіть початковий рік: ";
+    cout << "\nВведіть початковий рік: ";
     while (!(cin >> start)) {
         cout << "Помилка! Введіть ціле число ";
         cin.clear();
