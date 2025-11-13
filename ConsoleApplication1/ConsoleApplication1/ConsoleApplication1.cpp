@@ -11,14 +11,14 @@ int safeInput() {
     while (true) {
         cin >> value;
 
-        if (cin.fail()) {  // Якщо введено не число
-            cin.clear(); // Скидаємо стан помилки
-            cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); // Очищаємо буфер вводу
+        if (cin.fail()) {
+            cin.clear(); 
+            cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
             cout << "Помилка: введіть число! Спробуйте ще раз: ";
         }
         else {
-            cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); // Очистка "хвоста" рядка
-            return value; // Коректне число
+            cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
+            return value;
         }
     }
 }

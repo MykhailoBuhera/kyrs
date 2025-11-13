@@ -32,7 +32,6 @@ AuthManager::AuthManager(AuthManager&& other) noexcept
 }
 
 
-// Destructor
 AuthManager::~AuthManager() {
     saveUsers();
     cout << "[authmanager] знищено\n";
