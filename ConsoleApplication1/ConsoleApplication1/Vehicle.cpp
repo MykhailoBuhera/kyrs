@@ -30,7 +30,6 @@ void Vehicle::setColor(const string& c) { color = c; }
 void Vehicle::setYear(int y) { year = y; }
 void Vehicle::setPrice(double p) { price = p; }
 
-// Методи предметної області
 bool Vehicle::isOlderThan(int y) const { return year < y; }
 bool Vehicle::isCheaperThan(double p) const { return price < p; }
 int Vehicle::age(int currentYear) const { return currentYear - year; }
