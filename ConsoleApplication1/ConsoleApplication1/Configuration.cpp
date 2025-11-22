@@ -43,7 +43,6 @@ Configuration::Configuration(const string& brand, const string& model,
     hasMultimedia(multimedia),
     hasSafetySystem(safety),
     price(price) {
-    // Validate parameters that could be invalid at runtime
     if (packageName.empty()) {
         throw invalid_argument("Configuration::Configuration - packageName cannot be empty");
     }
@@ -114,7 +113,6 @@ string Configuration::toCSV() const {
 
 Configuration Configuration::fromCSV(const string& line) {
     try {
-        // Split into tokens by comma
         vector<string> tokens;
         string token;
         istringstream iss(line);
@@ -147,7 +145,6 @@ Configuration Configuration::fromCSV(const string& line) {
             throw invalid_argument(string("fromCSV: price out of range: '") + priceTok + "'");
         }
 
-        // Validate parsed values
         if (packageNameTok.empty()) {
             throw invalid_argument("fromCSV: packageName is empty");
         }
@@ -155,11 +152,9 @@ Configuration Configuration::fromCSV(const string& line) {
             throw invalid_argument("fromCSV: price cannot be negative");
         }
 
-        // Construct and return Configuration. Use "Unknown" for brand/model as before.
         return Configuration("Unknown", "Unknown", packageNameTok, ac, multimedia, safety, priceVal);
     }
     catch (const exception& ex) {
-        // Re-throw with context to help callers identify the problematic line
         throw invalid_argument(string("Configuration::fromCSV error parsing line: '") + line + "' -> " + ex.what());
     }
     catch (...) {
