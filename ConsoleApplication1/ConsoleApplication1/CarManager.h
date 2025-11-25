@@ -128,9 +128,26 @@ public:
     void showHelp() const;
     void showHelpnotadm() const;
 
+    /**
+     * @brief Валідатор введених значень за ключем.
+     * @tparam Type Тип значення (наприклад, `int`, `double`).
+     * @param value Значення для перевірки.
+     * @param flag Ключ правила ("year","fuel","AC","multi","safe","price","doors","distance","fuelPrice" тощо).
+     * @return `true`, якщо значення коректне.
+     */
     template <typename Type>
     bool checker(Type value, const std::string& flag) const;
+
+    /**
+     * @brief Безпечне зчитування цілого числа з `std::cin`.
+     * @return Коректно введене ціле число.
+     */
     int safeInput() const;
+
+    /**
+     * @brief Безпечне зчитування `double` з `std::cin`.
+     * @return Коректно введене число з плаваючою комою.
+     */
 	double safeInputDouble() const;
 
 private:
