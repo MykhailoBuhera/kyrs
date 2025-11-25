@@ -5,6 +5,7 @@
 #include <sstream>
 #include <limits>
 #include <stdexcept>
+#include <climits>
 
 using namespace std;
 
@@ -21,6 +22,102 @@ string toLower(const string& str) {
         [](unsigned char c) { return tolower(c); });
     return result;
 }
+
+int CarManager::safeInput() const {
+    int value;
+    while (true) {
+        cin >> value;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+            cout << "Помилка: введіть число! Спробуйте ще раз: ";
+        }
+        else {
+            cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+            return value;
+        }
+    }
+}
+
+double CarManager::safeInputDouble() const {
+    double value;
+    while (true) {
+        cin >> value;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+            cout << "Помилка: введіть число! Спробуйте ще раз: ";
+        }
+        else {
+            cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+            return value;
+        }
+    }
+}
+
+template <typename Type>
+bool CarManager::checker(Type value, const std::string& flag) const {
+    if (flag == "year" && value < 1900 && value > 2025) {
+        cout << "Помилка: Некоректно введений рік. Має бути більшим за 1900 та меншим за 2025." << "!\n";
+        return false;
+    }
+    else if (flag == "fuel") {
+        if (value < 1 || value > 100) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+    }
+    else if (flag == "AC") {
+        if (value < 0 || value > 1) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+    }
+    else if (flag == "multi") {
+        if (value < 0 || value > 1) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+    }
+    else if (flag == "safe") {
+        if (value < 0 || value > 1) {
+        cout << "Помилка: Некоректно введене значення." << "!\n";
+        return false;
+        }
+    }
+    else if (flag == "price") {
+        if (value < 1 || value > INT_MAX) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+    }
+    else if(flag == "doors") {
+        if (value < 2 || value > 6) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+	}
+    else if (flag == "distance") {
+        if (value <= 0.0) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+    }
+    else if (flag == "fuelPrice") {
+        if (value <= 0.0) {
+            cout << "Помилка: Некоректно введене значення." << "!\n";
+            return false;
+        }
+    }
+    else if (flag == "none") {
+        cout << "ERROR" << endl;
+		return false;
+    }
+    
+	return true;
+}
+
 
 void CarManager::printCarIndexList() const {
     cout << "\nІндекс\tМарка\n";
@@ -80,8 +177,24 @@ void CarManager::addCar() {
     cout << "\n--- Додавання нового авто ---\n";
     cout << "Марка: "; cin >> brand;
     cout << "Модель: "; cin >> model;             
-    cout << "Колір: "; cin >> color;
-    cout << "Витрати бензину (л/100км): "; cin >> fuel;
+    cout << "Колір: "; 
+    bool valid = false;
+    while (!valid) {
+        std::cin >> color;
+        valid = true; 
+        for (char c : color) {
+            if (!isalpha(c)) {
+                std::cerr << "Помилка: введено недопустимий символ '" << c << "'!" << std::endl;
+                valid = false;
+                break;          
+            }
+        }
+    }
+
+
+    cout << "Витрати бензину (л/100км): ";
+    fuel = safeInput();
+    if (!checker(fuel, "fuel")) return;
 
     cout << "Кількість дверей: ";
     while (!(cin >> doors)) {
@@ -91,27 +204,28 @@ void CarManager::addCar() {
     }
 
     cout << "Рік випуску: ";
-    while (!(cin >> year)) {
-        cout << "Помилка! Введіть ціле число (напр. 2023): ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
+    year = safeInput();
+    if (!checker(year, "year")) return;
 
     cout << "Ціна: ";
-    while (!(cin >> price)) {
-        cout << "Помилка! Введіть числове значення (напр. 550000): ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
+    price = safeInput();
+	if (!checker(price, "price")) return;
 
     string packageName;
     bool hasAC, hasMultimedia, hasSafety;
     double configPrice;
-    cin.ignore(); // Очищаємо буфер після попереднього cin
+    cin.ignore(); 
     cout << "Назва комплектації: "; getline(cin, packageName);
-    cout << "Чи є кондиціонер (1 - так/0 - ні): "; cin >> hasAC;
-    cout << "Чи є мультимедія (1 - так/0 - ні): "; cin >> hasMultimedia;
-    cout << "Чи є система безпеки (1 - так/0 - ні): "; cin >> hasSafety;
+	cin.ignore();
+    cout << "Чи є кондиціонер (1 - так/0 - ні): ";
+    hasAC=safeInput();
+    if (!checker(hasAC, "AC")) return;
+    cout << "Чи є мультимедія (1 - так/0 - ні): ";
+    hasMultimedia = safeInput();
+    if (!checker(hasMultimedia, "multi")) return;
+    cout << "Чи є система безпеки (1 - так/0 - ні): ";
+    hasSafety = safeInput();
+    if (!checker(hasSafety, "safe")) return;
     cout << "Нова ціна конфігурації: ";
     while (!(cin >> configPrice)) {
         cout << "Помилка! Введіть числове значення (напр. 550000): ";
@@ -121,7 +235,7 @@ void CarManager::addCar() {
 
     try {
         Configuration config(brand, model, packageName, hasAC, hasMultimedia, hasSafety, configPrice);
-        cars.push_back(make_shared<Car>(brand, color, model, fuel, doors, year, price, config));
+        cars.push_back(make_shared<Car>(brand, toLower(color), model, fuel, doors, year, price, config));
         cout << "? Авто додано!\n";
     }
     catch (const std::exception& ex) {
@@ -154,14 +268,19 @@ void CarManager::showAllCars() const {
         return;
     }
     cout << "\n--- Всі автомобілі ---\n";
-    for (const auto& car : cars) car->print();
+	int index = 1;
+    for (const auto& car : cars) {
+        cout << index << endl;
+        car->print();
+        index++;
+    }
 }
 
 void CarManager::editCar() {
     int index;
     showAllCars();
     cout << "\nВведіть індекс авто для редагування: ";
-    cin >> index;
+    index =  safeInput() - 1;;
 
     if (index >= 0 && index < cars.size()) {
         string brand, color, model;
@@ -171,37 +290,49 @@ void CarManager::editCar() {
         cout << "--- Редагування авто ---\n";
         cout << "Нова марка: "; cin >> brand;
         cout << "Нова модель: "; cin >> model; 
-        cout << "Новий колір: "; cin >> color;
-        cout << "Нові витрати бензину: "; cin >> fuel;
-        cout << "Нова кількість дверей: ";
-        while (!(cin >> doors)) {
-            cout << "Помилка! Введіть ціле число (напр. 4): ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Новий колір: "; 
+        bool valid = false;
+        while (!valid) {
+            cin >> color;
+            valid = true;
+            for (char c : color) {
+                if (!isalpha(c)) {
+                    cerr << "Помилка: введено недопустимий символ '" << c << "'!" <<endl<< "неможна вводити числове значення в колір"<<endl;
+					cout << "Введіть колір ще раз: ";
+                    valid = false;
+                    break;
+                }
+            }
         }
+        cout << "Нові витрати бензину: "; 
+		fuel = safeInput();
+        if (!checker(fuel, "fuel")) return;
+
+        cout << "Нова кількість дверей: ";
+		doors = safeInput();
+		if (!checker(doors, "doors")) return;
 
         cout << "Новий рік випуску: ";
-        while (!(cin >> year)) {
-            cout << "Помилка! Введіть ціле число (напр. 2023): ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
+        year = safeInput();
+        if (!checker(year, "year")) return;
 
         cout << "Нова ціна: ";
-        while (!(cin >> price)) {
-            cout << "Помилка! Введіть числове значення (напр. 550000): ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
+		price = safeInput();
+		if (!checker(price, "price")) return;
         
         double configPrice;
         string packageName;
         bool hasAC, hasMultimedia, hasSafety;
-        cin.ignore();
         cout << "Назва комплектації: "; getline(cin, packageName);
-        cout << "Чи є кондиціонер (1 - так/0 - ні): "; cin >> hasAC;
-        cout << "Чи є мультимедія (1 - так/0 - ні): "; cin >> hasMultimedia;
-        cout << "Чи є система безпеки (1 - так/0 - ні): "; cin >> hasSafety;
+        cout << "Чи є кондиціонер (1 - так/0 - ні): ";
+        hasAC = safeInput();
+        if (!checker(hasAC, "AC")) return;
+        cout << "Чи є мультимедія (1 - так/0 - ні): ";
+        hasMultimedia = safeInput();
+        if (!checker(hasMultimedia, "multi")) return;
+        cout << "Чи є система безпеки (1 - так/0 - ні): ";
+        hasSafety = safeInput();
+        if (!checker(hasSafety, "safe")) return;
         cout << "Нова ціна: ";
         while (!(cin >> configPrice)) {
             cout << "Помилка! Введіть числове значення (напр. 550000): ";
@@ -211,7 +342,7 @@ void CarManager::editCar() {
 
         try {
             Configuration config(brand, model, packageName, hasAC, hasMultimedia, hasSafety, configPrice);
-            cars[index] = make_shared<Car>(brand, color, model, fuel, doors, year, price, config);
+            cars[index] = make_shared<Car>(brand, toLower(color), model, fuel, doors, year, price, config);
             cout << "? Авто оновлено!\n";
         }
         catch (const std::exception& ex) {
@@ -246,7 +377,7 @@ void CarManager::removeCar() {
     int index;
     showAllCars();
     cout << "\nВведіть індекс авто для видалення: ";
-    cin >> index;
+    index =  safeInput() - 1;;
     if (index >= 0 && index < cars.size()) {
         cars.erase(cars.begin() + index);
         cout << "? Авто видалено!\n";
@@ -257,7 +388,6 @@ void CarManager::removeCar() {
     }
 }
 
-// ---------------- Аналітика ----------------
 void CarManager::findMostEconomicalCar() const {
     if (cars.empty()) {
         cout << "База порожня.\n"; return;
@@ -321,6 +451,7 @@ void CarManager::sortByFuelConsumption(bool ascending) {
 // ---------------- Фільтрація ----------------
 void CarManager::filterByBrand(const string& b) const {
     cout << "\nФільтр за маркою: " << b << "\n";
+	string brandLower = toLower(b);
     bool found = false;
     for (const auto& car : cars) {
         if (car->isBrand(b)) {
@@ -333,9 +464,10 @@ void CarManager::filterByBrand(const string& b) const {
 
 void CarManager::filterByColor(const string& color) const {
     cout << "\nФільтр за кольором: " << color << "\n";
+	string colorLower = toLower(color);
     bool found = false;
     for (const auto& car : cars) {
-        if (car->getColor() == color) {
+        if (car->getColor() == colorLower) {
             car->print();
             found = true;
         }
@@ -356,10 +488,10 @@ void CarManager::filterByYear(int year) const {
 }
 
 void CarManager::showCarAge() const {
-    int index;
+    double index;
     showAllCars();
-    cout << "\nВведіть індекс авто для перевірки віку: "; cin >> index;
-
+    cout << "\nВведіть індекс авто для перевірки віку: "; 
+    index =  safeInput() - 1;;
     if (index >= 0 && index < cars.size()) {
         cout << "Вік авто: " << cars[index]->getAge() << " років\n";
     }
@@ -394,7 +526,6 @@ void CarManager::searchCars() const {
     cout << "Введіть рік (або 0 для пропуску): ";
     cin >> yearFilter;
 
-    // Приводимо фільтри до нижнього регістру
     brandFilter = toLower(brandFilter);
     colorFilter = toLower(colorFilter);
 
@@ -462,7 +593,7 @@ void CarManager::applyDiscountToCar() {
     int index;
     double percent;
     showAllCars();
-    cout << "\nВведіть індекс авто для знижки: "; cin >> index;
+    cout << "\nВведіть індекс авто для знижки: "; index =  safeInput() - 1;
     cout << "Введіть відсоток знижки: "; cin >> percent;
 
     if (index >= 0 && index < cars.size()) {
@@ -479,9 +610,13 @@ void CarManager::calcTripCost() const {
     int index;
     double distance, fuelPrice;
     showAllCars();
-    cout << "\nВведіть індекс авто: "; cin >> index;
-    cout << "Введіть відстань поїздки (км): "; cin >> distance;
-    cout << "Введіть ціну за літр пального (грн): "; cin >> fuelPrice;
+    cout << "\nВведіть індекс авто: "; index =  safeInput() - 1;;
+    cout << "Введіть відстань поїздки (км): ";
+	distance = safeInputDouble();
+    if (!checker(distance, "distance")) return;
+    cout << "Введіть ціну за літр пального (грн): ";
+	fuelPrice = safeInputDouble();
+    if (!checker(fuelPrice, "fuelPrice")) return;
 
     if (index >= 0 && index < cars.size()) {
         double cost = cars[index]->costPer100km(fuelPrice) * (distance / 100.0);

@@ -128,6 +128,11 @@ public:
     void showHelp() const;
     void showHelpnotadm() const;
 
+    template <typename Type>
+    bool checker(Type value, const std::string& flag) const;
+    int safeInput() const;
+	double safeInputDouble() const;
+
 private:
     std::vector<std::shared_ptr<Car>> cars;
     void printCarIndexList() const;

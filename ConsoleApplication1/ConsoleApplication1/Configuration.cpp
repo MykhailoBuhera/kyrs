@@ -98,7 +98,7 @@ void Configuration::print() const {
         << " | AC: " << (hasAirConditioner ? "Yes" : "No")
         << " | Multimedia: " << (hasMultimedia ? "Yes" : "No")
         << " | Safety: " << (hasSafetySystem ? "Yes" : "No")
-        << " | Price: " << price << endl;
+        << " | Price: " << price << endl << endl;
 }
 
 string Configuration::toCSV() const {
